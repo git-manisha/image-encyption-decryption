@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Image Encryption/Decryption</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body class="bg-light">
+    <div class="container vh-100 d-flex flex-column justify-content-center align-items-center">
+        <div class="card shadow-lg p-4" style="width: 100%; max-width: 500px;">
+            <h1 class="text-center mb-4 text-primary">Encrypt & Decrypt Images</h1>
+
+            <!-- Toast message -->
+            <div id="toast-container" style="position: absolute; top: 10px; right: 10px;"></div>
+
+            <!-- Encryption Form -->
+            <h4 class="text-secondary mb-3">Encrypt an Image</h4>
+            <form action="/encrypt" method="POST" enctype="multipart/form-data" class="mb-4">
+                <div class="mb-3">
+                    <label for="image" class="form-label">Select Image</label>
+                    <input type="file" name="image" class="form-control" required>
+                </div>
+                <div class="mb-3">
+                    <label for="password" class="form-label">Password</label>
+                    <input type="password" name="password" class="form-control" placeholder="Enter password" required>
+                </div>
+                <button type="submit" class="btn btn-primary w-100">Encrypt</button>
+            </form>
+
+            <hr class="my-4">
+
+            <!-- Decryption Form -->
+            <h4 class="text-secondary mb-3">Decrypt an Image</h4>
+            <form action="/decrypt" method="POST">
+                <div class="mb-3">
+                    <label for="encrypted_file" class="form-label">Select Encrypted File</label>
+                    <select name="encrypted_file" class="form-select" required>
+                        {% for file in encrypted_files %}
+                            <option value="{{ file }}">{{ file }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="mb-3">
+                    <label for="password" class="form-label">Password</label>
+                    <input type="password" name="password" class="form-control" placeholder="Enter password" required>
+                </div>
+                <button type="submit" class="btn btn-primary w-100">Decrypt</button>
+            </form>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        // Function to show toast message
+        function showToast(message, isError = false) {
+            const toastContainer = document.getElementById('toast-container');
+            const toast = document.createElement('div');
+            toast.className = `toast align-items-center text-bg-${isError ? 'danger' : 'success'} border-0 show`;
+            toast.role = 'alert';
+            toast.style.minWidth = '200px';
+            toast.innerHTML = `
+                <div class="d-flex">
+                    <div class="toast-body">${message}</div>
+                    <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
+                </div>
+            `;
+            toastContainer.appendChild(toast);
+            setTimeout(() => {
+                toast.remove();
+            }, 3000); // Dismiss after 3 seconds
+        }
+
+        // Check for server-side messages
+        {% if message %}
+        showToast("{{ message }}", true);
+        {% endif %}
+    </script>
+</body>
+</html>
